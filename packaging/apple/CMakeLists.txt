@@ -19,22 +19,32 @@ INSTALL(RUNTIME_DEPENDENCY_SET runtime
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/stylesheets"
         DESTINATION scantailor-universal.app/Contents/Resources)
 
-CMAKE_PATH(SET QT5_PLUGINS_DIR NORMALIZE ${Qt5Core_DIR}/../../../plugins)
+# Detect Qt version and set appropriate plugin directory
+if(Qt6Core_DIR_FOUND)
+    # Qt6 detected
+    CMAKE_PATH(SET QT_PLUGINS_DIR NORMALIZE ${Qt6Core_DIR}/../../../plugins)
+    CMAKE_PATH(SET QT_DIR NORMALIZE "${Qt6Core_DIR}/../../..")
+    set(QT_LIB_NAME_PREFIX "Qt6")
+else()
+    # Qt5 detected (fallback)
+    CMAKE_PATH(SET QT_PLUGINS_DIR NORMALIZE ${Qt5Core_DIR}/../../../plugins)
+    CMAKE_PATH(SET QT_DIR NORMALIZE "${Qt5Core_DIR}/../../..")
+    set(QT_LIB_NAME_PREFIX "Qt5")
+endif()
+
 set(PLUGINS_DESTINATION scantailor-universal.app/Contents/PlugIns)
 
-INSTALL(FILES ${QT5_PLUGINS_DIR}/platforms/libqcocoa.dylib    DESTINATION ${PLUGINS_DESTINATION}/platforms)
+INSTALL(FILES ${QT_PLUGINS_DIR}/platforms/libqcocoa.dylib    DESTINATION ${PLUGINS_DESTINATION}/platforms)
 
-INSTALL(FILES ${QT5_PLUGINS_DIR}/styles/libqmacstyle.dylib    DESTINATION ${PLUGINS_DESTINATION}/styles)
+INSTALL(FILES ${QT_PLUGINS_DIR}/styles/libqmacstyle.dylib    DESTINATION ${PLUGINS_DESTINATION}/styles)
 
-INSTALL(FILES ${QT5_PLUGINS_DIR}/imageformats/libqico.dylib   DESTINATION ${PLUGINS_DESTINATION}/imageformats)
-INSTALL(FILES ${QT5_PLUGINS_DIR}/imageformats/libqjpeg.dylib  DESTINATION ${PLUGINS_DESTINATION}/imageformats)
-INSTALL(FILES ${QT5_PLUGINS_DIR}/imageformats/libqsvg.dylib   DESTINATION ${PLUGINS_DESTINATION}/imageformats)
-INSTALL(FILES ${QT5_PLUGINS_DIR}/imageformats/libqtiff.dylib  DESTINATION ${PLUGINS_DESTINATION}/imageformats)
-
-CMAKE_PATH(SET Qt5_DIR NORMALIZE "${Qt5Core_DIR}/../../..")
+INSTALL(FILES ${QT_PLUGINS_DIR}/imageformats/libqico.dylib   DESTINATION ${PLUGINS_DESTINATION}/imageformats)
+INSTALL(FILES ${QT_PLUGINS_DIR}/imageformats/libqjpeg.dylib  DESTINATION ${PLUGINS_DESTINATION}/imageformats)
+INSTALL(FILES ${QT_PLUGINS_DIR}/imageformats/libqsvg.dylib   DESTINATION ${PLUGINS_DESTINATION}/imageformats)
+INSTALL(FILES ${QT_PLUGINS_DIR}/imageformats/libqtiff.dylib  DESTINATION ${PLUGINS_DESTINATION}/imageformats)
 
 FOREACH(qm_file ${QM_FILES})
-        STRING(REGEX REPLACE "^.*scantailor-universal_" "${Qt5_DIR}translations/qtbase_" qtbase_qm_file "${qm_file}")
+        STRING(REGEX REPLACE "^.*scantailor-universal_" "${QT_DIR}translations/qtbase_" qtbase_qm_file "${qm_file}")
         IF(EXISTS "${qtbase_qm_file}")
                 INSTALL(FILES "${qtbase_qm_file}" DESTINATION "scantailor-universal.app/Contents/Resources/translations")
         ENDIF()
