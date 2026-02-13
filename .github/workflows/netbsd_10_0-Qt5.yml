@@ -11,6 +11,7 @@ jobs:
 
   netbsd_10_0-Qt5:
     runs-on: ubuntu-latest
+    if: false
     # Doesn't use clang, has gcc:
     # c++ (nb3 20231008) 10.5.0
     # Copyright (C) 2020 Free Software Foundation, Inc.

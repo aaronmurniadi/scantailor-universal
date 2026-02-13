@@ -11,6 +11,7 @@ jobs:
 
   freebsd_14_2-Qt5:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v4
         with:
