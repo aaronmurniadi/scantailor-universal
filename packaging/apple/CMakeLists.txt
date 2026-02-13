@@ -20,16 +20,27 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/stylesheets"
         DESTINATION scantailor-universal.app/Contents/Resources)
 
 # Detect Qt version and set appropriate plugin directory
-if(Qt6Core_DIR_FOUND)
+if(QT_VERSION_MAJOR EQUAL 6)
     # Qt6 detected
     CMAKE_PATH(SET QT_PLUGINS_DIR NORMALIZE ${Qt6Core_DIR}/../../../plugins)
     CMAKE_PATH(SET QT_DIR NORMALIZE "${Qt6Core_DIR}/../../..")
     set(QT_LIB_NAME_PREFIX "Qt6")
-else()
-    # Qt5 detected (fallback)
+elseif(QT_VERSION_MAJOR EQUAL 5)
+    # Qt5 detected
     CMAKE_PATH(SET QT_PLUGINS_DIR NORMALIZE ${Qt5Core_DIR}/../../../plugins)
     CMAKE_PATH(SET QT_DIR NORMALIZE "${Qt5Core_DIR}/../../..")
     set(QT_LIB_NAME_PREFIX "Qt5")
+else()
+    # Fallback - try Qt5 first
+    if(Qt5Core_DIR)
+        CMAKE_PATH(SET QT_PLUGINS_DIR NORMALIZE ${Qt5Core_DIR}/../../../plugins)
+        CMAKE_PATH(SET QT_DIR NORMALIZE "${Qt5Core_DIR}/../../..")
+        set(QT_LIB_NAME_PREFIX "Qt5")
+    elseif(Qt6Core_DIR)
+        CMAKE_PATH(SET QT_PLUGINS_DIR NORMALIZE ${Qt6Core_DIR}/../../../plugins)
+        CMAKE_PATH(SET QT_DIR NORMALIZE "${Qt6Core_DIR}/../../..")
+        set(QT_LIB_NAME_PREFIX "Qt6")
+    endif()
 endif()
 
 set(PLUGINS_DESTINATION scantailor-universal.app/Contents/PlugIns)
